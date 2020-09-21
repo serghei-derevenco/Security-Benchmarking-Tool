@@ -10,7 +10,7 @@ This application allows you to parse the local `.audit` files related to [tenabl
 
 ## GUI
 
-`gui.py` file contains source code for the Graphical User Interface, implemented in project using [tkinter](https://docs.python.org/3/library/tkinter.html).
+The Graphical User Interface is implemented in project using [tkinter](https://docs.python.org/3/library/tkinter.html).
 ## To Use
 
 Firstly, clone this repository using [Git](https://git-scm.com) or download `.zip` archive with project.  

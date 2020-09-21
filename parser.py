@@ -1,10 +1,21 @@
-import re
+import os
 import json
+from tkinter import *
+import tkinter as tk
+from tkinter import filedialog
+
+def choose_file():
+    root = tk.Tk()
+    root.withdraw()
+    root.file_name = filedialog.askopenfilename(initialdir=f"{os.getcwd()}", title='Select file', filetypes=(('Audit files', '*.audit'), ('all files', '*.*')))
+    file = root.file_name.split('/')[-1:][0]
+    root.destroy()
+    return file
 
 class Parser:
     @property
     def open_audit(self):
-        data = open("CIS_Ubuntu_18.04_LTS_Workstation_v2.0.1_L2.audit", "r").read()
+        data = open(f"{choose_file()}", "r").read()
         return data
 
     def get_item(self):

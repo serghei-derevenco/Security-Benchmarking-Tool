@@ -8,6 +8,6 @@ def json_to_db():
 
     df = pd.DataFrame(data)
 
-    con = sqlite3.connect("data2.db")
+    con = sqlite3.connect("data.db")
     c = con.cursor()
     df.to_sql("audits", con)

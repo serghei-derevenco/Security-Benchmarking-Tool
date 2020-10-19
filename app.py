@@ -1,4 +1,6 @@
+import subprocess
 import tkinter as tk
+
 from json_to_db import *
 from parser import Parser
 from datetime import datetime
@@ -12,6 +14,7 @@ class App(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        self.check_button = tk.Button(self, text='Check system', fg="yellow", bg="green", command=self.check_window)
         self.quit_btn = tk.Button(self, text="QUIT", fg="white", bg="red", command=self.master.destroy)
         self.entry = tk.Entry(self)
         self.search = tk.Label(self, text="Search:")
@@ -21,12 +24,13 @@ class App(tk.Frame):
         self.export_selected = tk.Button(self, text='Export selected items to json', fg="yellow", bg="blue", command=self.searched_items_to_json)
 
         self.quit_btn.pack(side="right", padx=40)
+        self.check_button.pack(side="right", padx=30)
         self.export_selected.pack(side="right", padx=20)
         self.entry.pack(side="right")
         self.search.pack(side="right")
-        self.select_btn.pack(side="left", padx=30)
-        self.unselect_btn.pack(side="left", padx=30)
-        self.export_all_btn.pack(side="left", padx=40)
+        self.select_btn.pack(side="left", padx=15)
+        self.unselect_btn.pack(side="left", padx=15)
+        self.export_all_btn.pack(side="left", padx=15)
 
         self._list = tk.Listbox(window, selectmode="multiple")
         self._list.pack(expand="yes", fill="both")
@@ -103,6 +107,45 @@ class App(tk.Frame):
                 json.dump(items, file_open, indent=2)
             self.entry.delete(0, 'end')
 
+    def check_window(self):
+        check_window = tk.Tk()
+        check_window.geometry("1260x740+10+10")
+        check_window.resizable(True, True)
+        check_window.title("Check results")
+
+        _list = tk.Listbox(check_window, selectmode="multiple")
+        _list.pack(expand="yes", fill="both")
+
+        x = self.check_items()
+
+        for each_item in range(len(x)):
+            _list.insert(tk.END, x[each_item])
+
+        check_window.mainloop()
+
+    def check_items(self):
+        with open('tmp.json', 'r') as json_file:
+            data = json.load(json_file)
+
+        audit_result = []
+
+        for item in data:
+            for i in item:
+                if i == 'cmd':
+                    if item[i] != 'none' and 'sudo' not in item[i]:
+                        try:
+                            audit_result.append(f"{item['description']} - {subprocess.run(args=['sudo', 'bash', item[i]], shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')}\n")
+                        except subprocess.CalledProcessError as error:
+                            pass
+
+        output = ""
+        for i in audit_result:
+            output += i
+
+        results = output.split('\n')
+
+        return results
+
 window = tk.Tk(className=' Security Benchmarking Tool')
 window.geometry("1260x740+10+10")
 window.resizable(True, True)
@@ -112,6 +155,3 @@ json_to_db()
 
 app = App(master=window)
 app.mainloop()
-
-
-

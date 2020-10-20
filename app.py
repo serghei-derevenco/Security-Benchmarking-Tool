@@ -70,6 +70,7 @@ class App(tk.Frame):
         result_window.geometry("500x150")
         result_window.resizable(0, 0)
         result_window.title('Searched info')
+
         # Adding some space from top
         tk.Label(result_window, text='').pack()
         tk.Label(result_window, text='').pack()

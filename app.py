@@ -107,22 +107,6 @@ class App(tk.Frame):
                 json.dump(items, file_open, indent=2)
             self.entry.delete(0, 'end')
 
-    def check_window(self):
-        check_window = tk.Tk()
-        check_window.geometry("1260x740+10+10")
-        check_window.resizable(True, True)
-        check_window.title("Check results")
-
-        _list = tk.Listbox(check_window, selectmode="multiple")
-        _list.pack(expand="yes", fill="both")
-
-        x = self.check_items()
-
-        for each_item in range(len(x)):
-            _list.insert(tk.END, x[each_item])
-
-        check_window.mainloop()
-
     def check_items(self):
         with open('tmp.json', 'r') as json_file:
             data = json.load(json_file)
@@ -145,6 +129,68 @@ class App(tk.Frame):
         results = output.split('\n')
 
         return results
+
+    def enforce_items(self):
+        items = self.check_items()
+        for item in items:
+            if item == 'none':
+                try:
+                    subprocess.run(args=['sudo', item], shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
+                except subprocess.CalledProcessError as error:
+                    pass
+
+        x = items
+
+        enforce_window = tk.Tk()
+        enforce_window.geometry("1260x740+10+10")
+        enforce_window.resizable(True, True)
+        enforce_window.title("Enforced items")
+
+        rollback_btn = tk.Button(enforce_window, text="Rallback", fg="white", bg="blue", command=self.rollback_items)
+        rollback_btn.pack(side="top")
+
+        _list = tk.Listbox(enforce_window, selectmode="multiple")
+        _list.pack(expand="yes", fill="both")
+
+        for each_item in range(len(x)):
+            _list.insert(tk.END, x[each_item])
+
+        enforce_window.mainloop()
+
+    def rollback_items(self):
+        rollback_window = tk.Tk()
+        rollback_window.geometry("1260x740+10+10")
+        rollback_window.resizable(True, True)
+        rollback_window.title("Rollback result")
+
+        _list = tk.Listbox(rollback_window, selectmode="multiple")
+        _list.pack(expand="yes", fill="both")
+
+        x = self.check_items()
+
+        for each_item in range(len(x)):
+            _list.insert(tk.END, x[each_item])
+
+        rollback_window.mainloop()
+
+    def check_window(self):
+        check_window = tk.Tk()
+        check_window.geometry("1260x740+10+10")
+        check_window.resizable(True, True)
+        check_window.title("Check results")
+
+        _list = tk.Listbox(check_window, selectmode="multiple")
+        _list.pack(expand="yes", fill="both")
+
+        enforce_btn = tk.Button(check_window, text="Enforce", fg="white", bg="red", command=self.enforce_items)
+        enforce_btn.pack(side="top")
+
+        x = self.check_items()
+
+        for each_item in range(len(x)):
+            _list.insert(tk.END, x[each_item])
+
+        check_window.mainloop()
 
 window = tk.Tk(className=' Security Benchmarking Tool')
 window.geometry("1260x740+10+10")
